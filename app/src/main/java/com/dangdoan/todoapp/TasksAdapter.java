@@ -12,9 +12,9 @@ import java.util.List;
  */
 
 public class TasksAdapter extends RecyclerView.Adapter<TaskHolder> {
-    private List<String> tasks;
+    private List<Task> tasks;
 
-    public TasksAdapter(List<String> tasks) {
+    public TasksAdapter(List<Task> tasks) {
         this.tasks = tasks;
     }
 
@@ -27,7 +27,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TaskHolder> {
 
     @Override
     public void onBindViewHolder(TaskHolder holder, int position) {
-        String task = tasks.get(position);
+        Task task = tasks.get(position);
         holder.bindTask(task);
     }
 
@@ -36,7 +36,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TaskHolder> {
         return tasks.size();
     }
 
-    public void addTask(String task) {
+    public void addTask(Task task) {
         tasks.add(task);
     }
 }

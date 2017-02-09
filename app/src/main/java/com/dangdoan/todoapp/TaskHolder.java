@@ -16,7 +16,7 @@ public class TaskHolder extends RecyclerView.ViewHolder {
         textView = (TextView) itemView.findViewById(android.R.id.text1);
     }
 
-    public void bindTask(String task) {
-        textView.setText(task);
+    public void bindTask(Task task) {
+        textView.setText(task.getName());
     }
 }

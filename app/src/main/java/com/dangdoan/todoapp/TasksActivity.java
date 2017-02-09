@@ -9,17 +9,17 @@ public class TasksActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tasks);
+        setContentView(R.layout.activity_content);
         addTasksFragment();
     }
 
     private void addTasksFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        TasksFragment tasksFragment = (TasksFragment) fragmentManager.
-                findFragmentById(R.id.content_frame);
+        TasksFragment tasksFragment = (TasksFragment) fragmentManager
+                .findFragmentById(R.id.contentFrame);
         if (tasksFragment == null) {
             tasksFragment = TasksFragment.newInstance();
-            fragmentManager.beginTransaction().add(R.id.content_frame, tasksFragment).commit();
+            fragmentManager.beginTransaction().add(R.id.contentFrame, tasksFragment).commit();
         }
     }
 }
