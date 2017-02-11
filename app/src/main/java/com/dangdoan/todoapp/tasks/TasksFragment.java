@@ -1,4 +1,4 @@
-package com.dangdoan.todoapp;
+package com.dangdoan.todoapp.tasks;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.dangdoan.todoapp.addtask.AddTaskActivity;
+import com.dangdoan.todoapp.R;
+import com.dangdoan.todoapp.Task;
 
 import java.util.ArrayList;
 import java.util.List;

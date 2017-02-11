@@ -1,4 +1,4 @@
-package com.dangdoan.todoapp;
+package com.dangdoan.todoapp.addtask;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,18 +11,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.dangdoan.todoapp.R;
+import com.dangdoan.todoapp.Task;
+import com.dangdoan.todoapp.datasource.TaskRepository;
+
 /**
  * Created by dangdoan on 2/8/17.
  */
 
 public class AddTaskFragment extends Fragment {
     private EditText nameEditText;
+    private TaskRepository taskRepository;
 
     public AddTaskFragment() {
     }
 
-    public static AddTaskFragment newInstance() {
-        return new AddTaskFragment();
+    public static AddTaskFragment newInstance(TaskRepository taskRepository) {
+        AddTaskFragment fragment = new AddTaskFragment();
+        fragment.taskRepository = taskRepository;
+        return fragment;
     }
 
     @Nullable
@@ -54,6 +61,8 @@ public class AddTaskFragment extends Fragment {
     }
 
     private void saveTask() {
-
+        String name = nameEditText.getText().toString();
+        Task task = new Task(name);
+        taskRepository.saveTask(task);
     }
 }

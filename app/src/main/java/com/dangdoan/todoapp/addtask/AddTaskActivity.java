@@ -1,10 +1,13 @@
-package com.dangdoan.todoapp;
+package com.dangdoan.todoapp.addtask;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.dangdoan.todoapp.R;
+import com.dangdoan.todoapp.datasource.TaskRepository;
 
 public class AddTaskActivity extends AppCompatActivity {
     public static Intent newIntent(Context context) {
@@ -23,7 +26,7 @@ public class AddTaskActivity extends AppCompatActivity {
         AddTaskFragment addTaskFragment = (AddTaskFragment) fragmentManager
                 .findFragmentById(R.id.contentFrame);
         if (addTaskFragment == null) {
-            addTaskFragment = AddTaskFragment.newInstance();
+            addTaskFragment = AddTaskFragment.newInstance(TaskRepository.getInstance(this));
             fragmentManager.beginTransaction().add(R.id.contentFrame, addTaskFragment).commit();
         }
     }

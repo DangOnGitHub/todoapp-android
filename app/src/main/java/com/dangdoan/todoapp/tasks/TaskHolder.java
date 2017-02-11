@@ -1,8 +1,10 @@
-package com.dangdoan.todoapp;
+package com.dangdoan.todoapp.tasks;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+
+import com.dangdoan.todoapp.Task;
 
 /**
  * Created by dangdoan on 2/8/17.
