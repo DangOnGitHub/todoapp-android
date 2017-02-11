@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import com.dangdoan.todoapp.Task;
@@ -18,6 +19,7 @@ import java.util.List;
 public class TaskRepository {
     private static TaskRepository instance;
     private TaskDbHelper taskDbHelper;
+    private List<TaskRepositoryObserver> taskRepositoryObservers = new ArrayList<>();
 
     private TaskRepository(Context context) {
         taskDbHelper = new TaskDbHelper(context);
@@ -72,6 +74,17 @@ public class TaskRepository {
         ContentValues values = getContentValues(task);
         database.insert(TaskContract.TaskEntry.TABLE_NAME, null, values);
         database.close();
+        notifyObserver();
+    }
+
+    private void notifyObserver() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            taskRepositoryObservers.forEach(TaskRepositoryObserver::onTasksChanged);
+        } else {
+            for (TaskRepositoryObserver observer : taskRepositoryObservers) {
+                observer.onTasksChanged();
+            }
+        }
     }
 
     @NonNull
@@ -79,5 +92,15 @@ public class TaskRepository {
         ContentValues values = new ContentValues();
         values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.getName());
         return values;
+    }
+
+    public void addObserver(TaskRepositoryObserver observer) {
+        if (!taskRepositoryObservers.contains(observer)) {
+            taskRepositoryObservers.add(observer);
+        }
+    }
+
+    public void removeObserver(TaskRepositoryObserver observer) {
+        taskRepositoryObservers.remove(observer);
     }
 }

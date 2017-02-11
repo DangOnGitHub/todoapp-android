@@ -55,6 +55,7 @@ public class AddTaskFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_save:
                 saveTask();
+                getActivity().finish();
                 break;
         }
         return true;
