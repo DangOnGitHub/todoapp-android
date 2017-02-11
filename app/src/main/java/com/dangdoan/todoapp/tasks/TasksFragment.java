@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.dangdoan.todoapp.addtask.AddTaskActivity;
 import com.dangdoan.todoapp.R;
 import com.dangdoan.todoapp.Task;
+import com.dangdoan.todoapp.datasource.TaskRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +27,15 @@ public class TasksFragment extends Fragment {
     private RecyclerView tasksRecyclerView;
     private FloatingActionButton addButton;
     private TasksAdapter tasksAdapter;
+    private TaskRepository taskRepository;
 
     public TasksFragment() {
     }
 
-    public static TasksFragment newInstance() {
-        return new TasksFragment();
+    public static TasksFragment newInstance(TaskRepository taskRepository) {
+        TasksFragment fragment = new TasksFragment();
+        fragment.taskRepository = taskRepository;
+        return fragment;
     }
 
     @Nullable
@@ -60,9 +64,7 @@ public class TasksFragment extends Fragment {
     }
 
     private void setUpTasksAdapter() {
-        List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task("First item"));
-        tasks.add(new Task("Second item"));
+        List<Task> tasks = taskRepository.getTasks();
         tasksAdapter = new TasksAdapter(tasks);
     }
 }

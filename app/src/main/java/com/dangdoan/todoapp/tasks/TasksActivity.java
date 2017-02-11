@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.dangdoan.todoapp.R;
+import com.dangdoan.todoapp.datasource.TaskRepository;
 
 public class TasksActivity extends AppCompatActivity {
 
@@ -20,7 +21,7 @@ public class TasksActivity extends AppCompatActivity {
         TasksFragment tasksFragment = (TasksFragment) fragmentManager
                 .findFragmentById(R.id.contentFrame);
         if (tasksFragment == null) {
-            tasksFragment = TasksFragment.newInstance();
+            tasksFragment = TasksFragment.newInstance(TaskRepository.getInstance(this));
             fragmentManager.beginTransaction().add(R.id.contentFrame, tasksFragment).commit();
         }
     }

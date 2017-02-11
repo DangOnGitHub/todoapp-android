@@ -2,10 +2,14 @@ package com.dangdoan.todoapp.datasource;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.dangdoan.todoapp.Task;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by dangdoan on 2/11/17.
@@ -24,6 +28,43 @@ public class TaskRepository {
             instance = new TaskRepository(context);
         }
         return instance;
+    }
+
+    public List<Task> getTasks() {
+        SQLiteDatabase database = taskDbHelper.getReadableDatabase();
+        Cursor cursor = getCursor(database);
+        List<Task> tasks = getTasks(cursor);
+        cursor.close();
+        database.close();
+        return tasks;
+    }
+
+    @NonNull
+    private List<Task> getTasks(Cursor cursor) {
+        List<Task> tasks = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            String name = cursor.getString(
+                    cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_NAME));
+            Task task = new Task(name);
+            tasks.add(task);
+        }
+        return tasks;
+    }
+
+    private Cursor getCursor(SQLiteDatabase database) {
+        String[] columns = {
+                TaskContract.TaskEntry._ID,
+                TaskContract.TaskEntry.COLUMN_NAME_NAME
+        };
+        return database.query(
+                TaskContract.TaskEntry.TABLE_NAME,
+                columns,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     public void saveTask(Task task) {
