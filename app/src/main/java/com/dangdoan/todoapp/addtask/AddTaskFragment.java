@@ -1,12 +1,9 @@
 package com.dangdoan.todoapp.addtask;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,11 +14,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.dangdoan.todoapp.R;
 import com.dangdoan.todoapp.Task;
 import com.dangdoan.todoapp.TintUtils;
 import com.dangdoan.todoapp.datasource.TaskRepository;
+
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by dangdoan on 2/8/17.
@@ -32,6 +34,7 @@ public class AddTaskFragment extends Fragment {
     private TaskRepository taskRepository;
     private AppCompatSpinner dueDateSpinner;
     private AppCompatSpinner prioritySpinner;
+    private Date dueDate = new Date();
 
     public AddTaskFragment() {
     }
@@ -65,15 +68,28 @@ public class AddTaskFragment extends Fragment {
         dueDateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateDueDate((TextView) view, position);
+            }
+
+            private void updateDueDate(TextView view, int position) {
+                DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
                 switch (position) {
                     case 0:
+                        dueDate = new Date();
                         break;
                     case 1:
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.add(Calendar.DAY_OF_YEAR, 1);
+                        dueDate = calendar.getTime();
                         break;
                     case 2:
-                        showDatePickerDialog();
+                        showDatePickerDialog(date -> {
+                            dueDate = date;
+                            view.setText(dateFormat.format(dueDate));
+                        });
                         break;
                 }
+                view.setText(dateFormat.format(dueDate));
             }
 
             @Override
@@ -83,8 +99,8 @@ public class AddTaskFragment extends Fragment {
         });
     }
 
-    private void showDatePickerDialog() {
-        DatePickerFragment fragment = new DatePickerFragment();
+    private void showDatePickerDialog(DatePickerFragment.DatePickerFragmentListener listener) {
+        DatePickerFragment fragment = DatePickerFragment.newInstance(listener, dueDate);
         fragment.show(getFragmentManager(), "datePicker");
     }
 
@@ -130,7 +146,7 @@ public class AddTaskFragment extends Fragment {
 
     private void saveTask() {
         String name = nameEditText.getText().toString();
-        Task task = Task.create(name);
+        Task task = Task.create(name, dueDate);
         taskRepository.saveTask(task);
     }
 }

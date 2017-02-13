@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import com.dangdoan.todoapp.Task;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,7 +48,7 @@ public class TaskRepository {
         while (cursor.moveToNext()) {
             String name = cursor.getString(
                     cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_NAME));
-            Task task = Task.create(name);
+            Task task = Task.create(name, new Date());
             tasks.add(task);
         }
         return tasks;
