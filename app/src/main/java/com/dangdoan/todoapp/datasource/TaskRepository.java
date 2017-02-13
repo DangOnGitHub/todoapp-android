@@ -48,7 +48,10 @@ public class TaskRepository {
         while (cursor.moveToNext()) {
             String name = cursor.getString(
                     cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_NAME));
-            Task task = Task.create(name, new Date());
+            long date = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE));
+            Date dueDate = new Date(date);
+            Task task = Task.create(name, dueDate);
             tasks.add(task);
         }
         return tasks;
@@ -57,7 +60,8 @@ public class TaskRepository {
     private Cursor getCursor(SQLiteDatabase database) {
         String[] columns = {
                 TaskContract.TaskEntry._ID,
-                TaskContract.TaskEntry.COLUMN_NAME_NAME
+                TaskContract.TaskEntry.COLUMN_NAME_NAME,
+                TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE,
         };
         return database.query(
                 TaskContract.TaskEntry.TABLE_NAME,
@@ -92,6 +96,7 @@ public class TaskRepository {
     private ContentValues getContentValues(Task task) {
         ContentValues values = new ContentValues();
         values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.name());
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE, task.dueDate().getTime());
         return values;
     }
 

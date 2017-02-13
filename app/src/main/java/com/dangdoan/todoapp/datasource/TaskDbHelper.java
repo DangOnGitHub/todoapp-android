@@ -14,7 +14,8 @@ public class TaskDbHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
             + TaskContract.TaskEntry.TABLE_NAME + " ("
             + TaskContract.TaskEntry._ID + " TEXT PRIMARY KEY, "
-            + TaskContract.TaskEntry.COLUMN_NAME_NAME + " TEXT"
+            + TaskContract.TaskEntry.COLUMN_NAME_NAME + " TEXT, "
+            + TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE + " INTEGER"
             + ")";
 
     public TaskDbHelper(Context context) {
