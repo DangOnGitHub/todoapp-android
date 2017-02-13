@@ -1,6 +1,15 @@
 <resources>
     <string name="app_name">ToDoApp</string>
     <string name="name">Name</string>
-    <string name="task_name_hint">Enter task\'s name</string>
     <string name="menu_save">Save</string>
+    <string-array name="due_date">
+        <item>Today</item>
+        <item>Tomorrow</item>
+        <item>Pick a date...</item>
+    </string-array>
+    <string-array name="priority">
+        <item>High</item>
+        <item>Normal</item>
+        <item>Low</item>
+    </string-array>
 </resources>

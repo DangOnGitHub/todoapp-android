@@ -1,14 +1,18 @@
 package com.dangdoan.todoapp.addtask;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 import com.dangdoan.todoapp.R;
@@ -22,6 +26,8 @@ import com.dangdoan.todoapp.datasource.TaskRepository;
 public class AddTaskFragment extends Fragment {
     private EditText nameEditText;
     private TaskRepository taskRepository;
+    private AppCompatSpinner dueDateSpinner;
+    private AppCompatSpinner prioritySpinner;
 
     public AddTaskFragment() {
     }
@@ -41,8 +47,63 @@ public class AddTaskFragment extends Fragment {
     }
 
     private void configureUi(View rootView) {
-        nameEditText = (EditText) rootView.findViewById(R.id.nameEditText);
         setHasOptionsMenu(true);
+        nameEditText = (EditText) rootView.findViewById(R.id.nameEditText);
+        dueDateSpinner = (AppCompatSpinner) rootView.findViewById(R.id.dueDateSpinner);
+        configureDueDateSpinner();
+        prioritySpinner = (AppCompatSpinner) rootView.findViewById(R.id.prioritySpinner);
+        configurePrioritySpinner();
+    }
+
+    private void configureDueDateSpinner() {
+        ArrayAdapter<String> dueDateAdapter = setUpDateAdapter();
+        dueDateSpinner.setAdapter(dueDateAdapter);
+        dueDateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        showDatePickerDialog();
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // No operation
+            }
+        });
+    }
+
+    private void showDatePickerDialog() {
+        DatePickerFragment fragment = new DatePickerFragment();
+        fragment.show(getFragmentManager(), "datePicker");
+    }
+
+    private ArrayAdapter<String> setUpDateAdapter() {
+        return new ArrayAdapter<>(
+                getActivity(),
+                android.R.layout.simple_spinner_dropdown_item,
+                getResources().getStringArray(R.array.due_date)
+        );
+    }
+
+    private void configurePrioritySpinner() {
+        ArrayAdapter<String> priorityAdapter = setUpPriorityAdapter();
+        prioritySpinner.setAdapter(priorityAdapter);
+    }
+
+    @NonNull
+    private ArrayAdapter<String> setUpPriorityAdapter() {
+        return new ArrayAdapter<>(
+                getActivity(),
+                android.R.layout.simple_spinner_dropdown_item,
+                getResources().getStringArray(R.array.priority)
+        );
     }
 
     @Override
