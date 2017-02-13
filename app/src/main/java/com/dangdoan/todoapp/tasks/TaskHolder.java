@@ -19,6 +19,6 @@ public class TaskHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTask(Task task) {
-        textView.setText(task.getName());
+        textView.setText(task.name());
     }
 }

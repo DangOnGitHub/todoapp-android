@@ -47,7 +47,7 @@ public class TaskRepository {
         while (cursor.moveToNext()) {
             String name = cursor.getString(
                     cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_NAME));
-            Task task = new Task(name);
+            Task task = Task.create(name);
             tasks.add(task);
         }
         return tasks;
@@ -90,7 +90,7 @@ public class TaskRepository {
     @NonNull
     private ContentValues getContentValues(Task task) {
         ContentValues values = new ContentValues();
-        values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.getName());
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.name());
         return values;
     }
 

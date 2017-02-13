@@ -1,17 +1,16 @@
 package com.dangdoan.todoapp;
 
+import com.google.auto.value.AutoValue;
+
 /**
  * Created by dangdoan on 2/8/17.
  */
 
-public class Task {
-    private String name;
-
-    public Task(String name) {
-        this.name = name;
+@AutoValue
+public abstract class Task {
+    public static Task create(String name) {
+        return new AutoValue_Task(name);
     }
 
-    public String getName() {
-        return name;
-    }
+    public abstract String name();
 }

@@ -1,9 +1,12 @@
 package com.dangdoan.todoapp.addtask;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +20,7 @@ import android.widget.EditText;
 
 import com.dangdoan.todoapp.R;
 import com.dangdoan.todoapp.Task;
+import com.dangdoan.todoapp.TintUtils;
 import com.dangdoan.todoapp.datasource.TaskRepository;
 
 /**
@@ -109,6 +113,8 @@ public class AddTaskFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_task_fragment_menu, menu);
+        MenuItem saveMenuItem = menu.findItem(R.id.menu_save);
+        TintUtils.tintMenuItem(getActivity(), saveMenuItem, android.R.color.white);
     }
 
     @Override
@@ -124,7 +130,7 @@ public class AddTaskFragment extends Fragment {
 
     private void saveTask() {
         String name = nameEditText.getText().toString();
-        Task task = new Task(name);
+        Task task = Task.create(name);
         taskRepository.saveTask(task);
     }
 }
