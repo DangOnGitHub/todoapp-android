@@ -54,9 +54,7 @@ public class TasksFragment extends Fragment implements LoaderManager.LoaderCallb
         tasksRecyclerView = (RecyclerView) rootView.findViewById(R.id.tasksRecyclerView);
         configureTasksRecyclerView();
         addButton = (FloatingActionButton) rootView.findViewById(R.id.addButton);
-        addButton.setOnClickListener(v -> {
-            showAddTaskUi();
-        });
+        addButton.setOnClickListener(v -> showAddTaskUi());
     }
 
     private void showAddTaskUi() {
@@ -71,7 +69,7 @@ public class TasksFragment extends Fragment implements LoaderManager.LoaderCallb
 
     private void setUpTasksAdapter() {
         List<Task> tasks = Collections.emptyList();
-        tasksAdapter = new TasksAdapter(tasks, taskId -> showEditTaskUi(taskId));
+        tasksAdapter = new TasksAdapter(tasks, this::showEditTaskUi);
     }
 
     private void showEditTaskUi(String taskId) {

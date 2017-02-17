@@ -34,7 +34,9 @@ public class AddEditTaskActivity extends AppCompatActivity {
                 .findFragmentById(R.id.contentFrame);
         if (addEditTaskFragment == null) {
             String taskId = getIntent().getStringExtra(EXTRA_TASK_ID);
-            addEditTaskFragment = AddEditTaskFragment.newInstance(TaskRepository.getInstance(this), taskId);
+            TaskLoader taskLoader = new TaskLoader(this, TaskRepository.getInstance(this), taskId);
+            addEditTaskFragment = AddEditTaskFragment.newInstance(
+                    TaskRepository.getInstance(this), taskId, taskLoader);
             fragmentManager.beginTransaction().add(R.id.contentFrame, addEditTaskFragment).commit();
         }
     }

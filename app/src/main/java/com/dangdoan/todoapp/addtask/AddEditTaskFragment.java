@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,31 +32,38 @@ import java.util.UUID;
  * Created by dangdoan on 2/8/17.
  */
 
-public class AddEditTaskFragment extends Fragment {
+public class AddEditTaskFragment extends Fragment implements LoaderManager.LoaderCallbacks<Task> {
     private static final String ARGUMENT_TASK_ID = "ARGUMENT_TASK_ID";
+    private static final int TASK_LOADER_ID = 0;
     private EditText nameEditText;
     private TaskRepository taskRepository;
     private AppCompatSpinner dueDateSpinner;
     private AppCompatSpinner prioritySpinner;
     private Date dueDate = new Date();
+    private Loader<Task> taskLoader;
+    private String taskId;
 
     public AddEditTaskFragment() {
     }
 
-    public static AddEditTaskFragment newInstance(TaskRepository taskRepository, @Nullable String taskId) {
+    public static AddEditTaskFragment newInstance(
+            TaskRepository taskRepository, @Nullable String taskId, Loader<Task> taskLoader) {
         AddEditTaskFragment fragment = new AddEditTaskFragment();
         fragment.taskRepository = taskRepository;
+        fragment.taskId = taskId;
         if (taskId != null) {
             Bundle arguments = new Bundle();
             arguments.putString(ARGUMENT_TASK_ID, taskId);
             fragment.setArguments(arguments);
         }
+        fragment.taskLoader = taskLoader;
         return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String taskId = getArguments() != null ? getArguments().getString(ARGUMENT_TASK_ID) : null;
     }
 
     @Nullable
@@ -161,5 +170,34 @@ public class AddEditTaskFragment extends Fragment {
         String name = nameEditText.getText().toString();
         Task task = Task.create(id, name, dueDate);
         taskRepository.saveTask(task);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (isEdit()) {
+            getLoaderManager().initLoader(TASK_LOADER_ID, null, this);
+        }
+    }
+
+    private boolean isEdit() {
+        return taskId != null;
+    }
+
+    @Override
+    public Loader<Task> onCreateLoader(int id, Bundle args) {
+        return taskLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Task> loader, Task data) {
+        if (data != null) {
+            nameEditText.append(data.name());
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Task> loader) {
+        // No operation
     }
 }

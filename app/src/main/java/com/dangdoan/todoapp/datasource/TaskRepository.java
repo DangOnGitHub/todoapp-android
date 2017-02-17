@@ -33,33 +33,72 @@ public class TaskRepository {
         return instance;
     }
 
+    public Task getTask(String taskId) {
+        SQLiteDatabase database = taskDbHelper.getReadableDatabase();
+        Cursor cursor = getCursorForTaskQuery(taskId, database);
+        Task task = readTaskWithCursor(cursor);
+        cursor.close();
+        database.close();
+        return task;
+    }
+
+    @NonNull
+    private Task readTaskWithCursor(Cursor cursor) {
+        cursor.moveToFirst();
+        return getTaskAtCurrentCursorPosition(cursor);
+    }
+
+    private Cursor getCursorForTaskQuery(String taskId, SQLiteDatabase database) {
+        String[] columns = {
+                TaskContract.TaskEntry._ID,
+                TaskContract.TaskEntry.COLUMN_NAME_NAME,
+                TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE,
+        };
+        String selection = TaskContract.TaskEntry._ID + " = ?";
+        String[] selectionArgs = {taskId};
+        return database.query(
+                TaskContract.TaskEntry.TABLE_NAME,
+                columns,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+    }
+
     public List<Task> getTasks() {
         SQLiteDatabase database = taskDbHelper.getReadableDatabase();
-        Cursor cursor = getCursor(database);
-        List<Task> tasks = getTasks(cursor);
+        Cursor cursor = getCursorForTasksQuery(database);
+        List<Task> tasks = readTasksWithCursor(cursor);
         cursor.close();
         database.close();
         return tasks;
     }
 
     @NonNull
-    private List<Task> getTasks(Cursor cursor) {
+    private List<Task> readTasksWithCursor(Cursor cursor) {
         List<Task> tasks = new ArrayList<>();
         while (cursor.moveToNext()) {
-            String id = cursor.getString(
-                    cursor.getColumnIndexOrThrow(TaskContract.TaskEntry._ID));
-            String name = cursor.getString(
-                    cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_NAME));
-            long date = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE));
-            Date dueDate = new Date(date);
-            Task task = Task.create(id, name, dueDate);
+            Task task = getTaskAtCurrentCursorPosition(cursor);
             tasks.add(task);
         }
         return tasks;
     }
 
-    private Cursor getCursor(SQLiteDatabase database) {
+    @NonNull
+    private Task getTaskAtCurrentCursorPosition(Cursor cursor) {
+        String id = cursor.getString(
+                cursor.getColumnIndexOrThrow(TaskContract.TaskEntry._ID));
+        String name = cursor.getString(
+                cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_NAME));
+        long date = cursor.getLong(
+                cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE));
+        Date dueDate = new Date(date);
+        return Task.create(id, name, dueDate);
+    }
+
+    private Cursor getCursorForTasksQuery(SQLiteDatabase database) {
         String[] columns = {
                 TaskContract.TaskEntry._ID,
                 TaskContract.TaskEntry.COLUMN_NAME_NAME,
