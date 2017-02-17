@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.dangdoan.todoapp.R;
 import com.dangdoan.todoapp.Task;
-import com.dangdoan.todoapp.addtask.AddTaskActivity;
+import com.dangdoan.todoapp.addtask.AddEditTaskActivity;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,9 +55,13 @@ public class TasksFragment extends Fragment implements LoaderManager.LoaderCallb
         configureTasksRecyclerView();
         addButton = (FloatingActionButton) rootView.findViewById(R.id.addButton);
         addButton.setOnClickListener(v -> {
-            Intent intent = AddTaskActivity.newIntent(getActivity());
-            startActivity(intent);
+            showAddTaskUi();
         });
+    }
+
+    private void showAddTaskUi() {
+        Intent intent = AddEditTaskActivity.newIntent(getActivity(), null);
+        startActivity(intent);
     }
 
     private void configureTasksRecyclerView() {
@@ -71,7 +75,8 @@ public class TasksFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     private void showEditTaskUi(String taskId) {
-
+        Intent intent = AddEditTaskActivity.newIntent(getActivity(), taskId);
+        startActivity(intent);
     }
 
     @Override

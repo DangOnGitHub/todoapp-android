@@ -30,20 +30,31 @@ import java.util.UUID;
  * Created by dangdoan on 2/8/17.
  */
 
-public class AddTaskFragment extends Fragment {
+public class AddEditTaskFragment extends Fragment {
+    private static final String ARGUMENT_TASK_ID = "ARGUMENT_TASK_ID";
     private EditText nameEditText;
     private TaskRepository taskRepository;
     private AppCompatSpinner dueDateSpinner;
     private AppCompatSpinner prioritySpinner;
     private Date dueDate = new Date();
 
-    public AddTaskFragment() {
+    public AddEditTaskFragment() {
     }
 
-    public static AddTaskFragment newInstance(TaskRepository taskRepository) {
-        AddTaskFragment fragment = new AddTaskFragment();
+    public static AddEditTaskFragment newInstance(TaskRepository taskRepository, @Nullable String taskId) {
+        AddEditTaskFragment fragment = new AddEditTaskFragment();
         fragment.taskRepository = taskRepository;
+        if (taskId != null) {
+            Bundle arguments = new Bundle();
+            arguments.putString(ARGUMENT_TASK_ID, taskId);
+            fragment.setArguments(arguments);
+        }
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Nullable
