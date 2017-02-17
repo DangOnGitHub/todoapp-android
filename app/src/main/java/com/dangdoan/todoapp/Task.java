@@ -10,9 +10,11 @@ import java.util.Date;
 
 @AutoValue
 public abstract class Task {
-    public static Task create(String name, Date dueDate) {
-        return new AutoValue_Task(name, dueDate);
+    public static Task create(String id, String name, Date dueDate) {
+        return new AutoValue_Task(id, name, dueDate);
     }
+
+    public abstract String id();
 
     public abstract String name();
 

@@ -11,14 +11,23 @@ import com.dangdoan.todoapp.Task;
  */
 
 public class TaskHolder extends RecyclerView.ViewHolder {
-    private TextView textView;
+    public interface OnTaskSelectedListener {
+        void onTaskSelected(String taskId);
+    }
 
-    public TaskHolder(View itemView) {
+    private TextView textView;
+    private OnTaskSelectedListener listener;
+    private Task task;
+
+    public TaskHolder(View itemView, OnTaskSelectedListener listener) {
         super(itemView);
         textView = (TextView) itemView.findViewById(android.R.id.text1);
+        this.listener = listener;
+        itemView.setOnClickListener(v -> listener.onTaskSelected(task.id()));
     }
 
     public void bindTask(Task task) {
+        this.task = task;
         textView.setText(task.name());
     }
 }

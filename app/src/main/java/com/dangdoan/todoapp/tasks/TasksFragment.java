@@ -67,7 +67,11 @@ public class TasksFragment extends Fragment implements LoaderManager.LoaderCallb
 
     private void setUpTasksAdapter() {
         List<Task> tasks = Collections.emptyList();
-        tasksAdapter = new TasksAdapter(tasks);
+        tasksAdapter = new TasksAdapter(tasks, taskId -> showEditTaskUi(taskId));
+    }
+
+    private void showEditTaskUi(String taskId) {
+
     }
 
     @Override

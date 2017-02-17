@@ -46,12 +46,14 @@ public class TaskRepository {
     private List<Task> getTasks(Cursor cursor) {
         List<Task> tasks = new ArrayList<>();
         while (cursor.moveToNext()) {
+            String id = cursor.getString(
+                    cursor.getColumnIndexOrThrow(TaskContract.TaskEntry._ID));
             String name = cursor.getString(
                     cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_NAME));
             long date = cursor.getLong(
                     cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE));
             Date dueDate = new Date(date);
-            Task task = Task.create(name, dueDate);
+            Task task = Task.create(id, name, dueDate);
             tasks.add(task);
         }
         return tasks;
@@ -95,6 +97,7 @@ public class TaskRepository {
     @NonNull
     private ContentValues getContentValues(Task task) {
         ContentValues values = new ContentValues();
+        values.put(TaskContract.TaskEntry._ID, task.id());
         values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.name());
         values.put(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE, task.dueDate().getTime());
         return values;

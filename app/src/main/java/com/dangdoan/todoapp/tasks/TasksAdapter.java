@@ -15,16 +15,18 @@ import java.util.List;
 
 public class TasksAdapter extends RecyclerView.Adapter<TaskHolder> {
     private List<Task> tasks;
+    private TaskHolder.OnTaskSelectedListener listener;
 
-    public TasksAdapter(List<Task> tasks) {
+    public TasksAdapter(List<Task> tasks, TaskHolder.OnTaskSelectedListener listener) {
         this.tasks = tasks;
+        this.listener = listener;
     }
 
     @Override
     public TaskHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View itemView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-        return new TaskHolder(itemView);
+        return new TaskHolder(itemView, listener);
     }
 
     @Override

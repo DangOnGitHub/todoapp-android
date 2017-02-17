@@ -24,6 +24,7 @@ import com.dangdoan.todoapp.datasource.TaskRepository;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by dangdoan on 2/8/17.
@@ -145,8 +146,9 @@ public class AddTaskFragment extends Fragment {
     }
 
     private void saveTask() {
+        String id = UUID.randomUUID().toString();
         String name = nameEditText.getText().toString();
-        Task task = Task.create(name, dueDate);
+        Task task = Task.create(id, name, dueDate);
         taskRepository.saveTask(task);
     }
 }
