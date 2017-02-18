@@ -115,10 +115,24 @@ public class TaskRepository {
         );
     }
 
-    public void saveTask(Task task) {
+    public void insertTask(Task task) {
+        saveTask(task, true);
+    }
+
+    public void updateTask(Task task) {
+        saveTask(task, false);
+    }
+
+    public void saveTask(Task task, boolean isNewTask) {
         SQLiteDatabase database = taskDbHelper.getWritableDatabase();
-        ContentValues values = getContentValues(task);
-        database.insert(TaskContract.TaskEntry.TABLE_NAME, null, values);
+        ContentValues values = createContentValues(task, isNewTask);
+        if (isNewTask) {
+            database.insert(TaskContract.TaskEntry.TABLE_NAME, null, values);
+        } else {
+            String whereClause = TaskContract.TaskEntry._ID + " = ?";
+            String[] whereArgs = {task.id()};
+            database.update(TaskContract.TaskEntry.TABLE_NAME, values, whereClause, whereArgs);
+        }
         database.close();
         notifyObserver();
     }
@@ -134,9 +148,11 @@ public class TaskRepository {
     }
 
     @NonNull
-    private ContentValues getContentValues(Task task) {
+    private ContentValues createContentValues(Task task, boolean isNewTask) {
         ContentValues values = new ContentValues();
-        values.put(TaskContract.TaskEntry._ID, task.id());
+        if (isNewTask) {
+            values.put(TaskContract.TaskEntry._ID, task.id());
+        }
         values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.name());
         values.put(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE, task.dueDate().getTime());
         return values;

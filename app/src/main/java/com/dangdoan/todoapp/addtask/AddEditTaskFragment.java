@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,17 +14,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.dangdoan.todoapp.R;
 import com.dangdoan.todoapp.Task;
 import com.dangdoan.todoapp.TintUtils;
 import com.dangdoan.todoapp.datasource.TaskRepository;
 
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -37,9 +36,8 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
     private static final int TASK_LOADER_ID = 0;
     private EditText nameEditText;
     private TaskRepository taskRepository;
-    private AppCompatSpinner dueDateSpinner;
+    private DatePicker dueDatePicker;
     private AppCompatSpinner prioritySpinner;
-    private Date dueDate = new Date();
     private Loader<Task> taskLoader;
     private String taskId;
 
@@ -63,13 +61,24 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String taskId = getArguments() != null ? getArguments().getString(ARGUMENT_TASK_ID) : null;
+        taskId = getArguments() != null ? getArguments().getString(ARGUMENT_TASK_ID) : null;
+        setTitle();
+    }
+
+    public void setTitle() {
+        String title;
+        if (isEdit()) {
+            title = getString(R.string.edit_task);
+        } else {
+            title = getString(R.string.add_task);
+        }
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(title);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_add_task, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_add_edit_task, container, false);
         configureUi(rootView);
         return rootView;
     }
@@ -77,60 +86,9 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
     private void configureUi(View rootView) {
         setHasOptionsMenu(true);
         nameEditText = (EditText) rootView.findViewById(R.id.nameEditText);
-        dueDateSpinner = (AppCompatSpinner) rootView.findViewById(R.id.dueDateSpinner);
-        configureDueDateSpinner();
+        dueDatePicker = (DatePicker) rootView.findViewById(R.id.dueDatePicker);
         prioritySpinner = (AppCompatSpinner) rootView.findViewById(R.id.prioritySpinner);
         configurePrioritySpinner();
-    }
-
-    private void configureDueDateSpinner() {
-        ArrayAdapter<String> dueDateAdapter = setUpDateAdapter();
-        dueDateSpinner.setAdapter(dueDateAdapter);
-        dueDateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateDueDate((TextView) view, position);
-            }
-
-            private void updateDueDate(TextView view, int position) {
-                DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
-                switch (position) {
-                    case 0:
-                        dueDate = new Date();
-                        break;
-                    case 1:
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.add(Calendar.DAY_OF_YEAR, 1);
-                        dueDate = calendar.getTime();
-                        break;
-                    case 2:
-                        showDatePickerDialog(date -> {
-                            dueDate = date;
-                            view.setText(dateFormat.format(dueDate));
-                        });
-                        break;
-                }
-                view.setText(dateFormat.format(dueDate));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // No operation
-            }
-        });
-    }
-
-    private void showDatePickerDialog(DatePickerFragment.DatePickerFragmentListener listener) {
-        DatePickerFragment fragment = DatePickerFragment.newInstance(listener, dueDate);
-        fragment.show(getFragmentManager(), "datePicker");
-    }
-
-    private ArrayAdapter<String> setUpDateAdapter() {
-        return new ArrayAdapter<>(
-                getActivity(),
-                android.R.layout.simple_spinner_dropdown_item,
-                getResources().getStringArray(R.array.due_date)
-        );
     }
 
     private void configurePrioritySpinner() {
@@ -150,26 +108,64 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_task_fragment_menu, menu);
-        MenuItem saveMenuItem = menu.findItem(R.id.menu_save);
-        TintUtils.tintMenuItem(getActivity(), saveMenuItem, android.R.color.white);
+        configureMenu(menu);
+    }
+
+    public void configureMenu(Menu menu) {
+        removeUnneededMenuItem(menu);
+        tintAllMenuItemsWhite(menu);
+    }
+
+    public void removeUnneededMenuItem(Menu menu) {
+        if (isEdit()) {
+            menu.removeItem(R.id.menu_save);
+        } else {
+            menu.removeItem(R.id.menu_done);
+        }
+    }
+
+    public void tintAllMenuItemsWhite(Menu menu) {
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem menuItem = menu.getItem(i);
+            TintUtils.tintMenuItem(getActivity(), menuItem, android.R.color.white);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_save:
-                saveTask();
+                createTask();
+                getActivity().finish();
+                break;
+            case R.id.menu_done:
+                editTask();
                 getActivity().finish();
                 break;
         }
         return true;
     }
 
-    private void saveTask() {
+    private void createTask() {
         String id = UUID.randomUUID().toString();
+        Task task = taskFromUiInputs(id);
+        taskRepository.insertTask(task);
+    }
+
+    private void editTask() {
+        Task task = taskFromUiInputs(taskId);
+        taskRepository.updateTask(task);
+    }
+
+    private Task taskFromUiInputs(String id) {
         String name = nameEditText.getText().toString();
-        Task task = Task.create(id, name, dueDate);
-        taskRepository.saveTask(task);
+        Calendar calendar = Calendar.getInstance();
+        int year = dueDatePicker.getYear();
+        int month = dueDatePicker.getMonth();
+        int day = dueDatePicker.getDayOfMonth();
+        calendar.set(year, month, day);
+        Date dueDate = calendar.getTime();
+        return Task.create(id, name, dueDate);
     }
 
     @Override
@@ -193,6 +189,12 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(Loader<Task> loader, Task data) {
         if (data != null) {
             nameEditText.append(data.name());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(data.dueDate());
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            dueDatePicker.updateDate(year, month, day);
         }
     }
 
