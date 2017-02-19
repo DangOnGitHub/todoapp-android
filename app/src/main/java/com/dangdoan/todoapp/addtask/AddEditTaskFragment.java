@@ -165,7 +165,8 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
         int day = dueDatePicker.getDayOfMonth();
         calendar.set(year, month, day);
         Date dueDate = calendar.getTime();
-        return Task.create(id, name, dueDate);
+        int priority = Task.getPriority(prioritySpinner.getSelectedItemPosition());
+        return Task.create(id, name, dueDate, priority);
     }
 
     @Override
@@ -195,6 +196,7 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
             dueDatePicker.updateDate(year, month, day);
+            prioritySpinner.setSelection(data.priority());
         }
     }
 

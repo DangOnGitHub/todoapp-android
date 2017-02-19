@@ -15,7 +15,8 @@ public class TaskDbHelper extends SQLiteOpenHelper {
             + TaskContract.TaskEntry.TABLE_NAME + " ("
             + TaskContract.TaskEntry._ID + " TEXT PRIMARY KEY, "
             + TaskContract.TaskEntry.COLUMN_NAME_NAME + " TEXT, "
-            + TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE + " INTEGER"
+            + TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE + " INTEGER, "
+            + TaskContract.TaskEntry.COLUMN_NAME_PRIORITY + " INTEGER"
             + ")";
 
     public TaskDbHelper(Context context) {

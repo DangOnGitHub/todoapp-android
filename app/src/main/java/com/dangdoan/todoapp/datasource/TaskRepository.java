@@ -53,6 +53,7 @@ public class TaskRepository {
                 TaskContract.TaskEntry._ID,
                 TaskContract.TaskEntry.COLUMN_NAME_NAME,
                 TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE,
+                TaskContract.TaskEntry.COLUMN_NAME_PRIORITY,
         };
         String selection = TaskContract.TaskEntry._ID + " = ?";
         String[] selectionArgs = {taskId};
@@ -95,7 +96,10 @@ public class TaskRepository {
         long date = cursor.getLong(
                 cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE));
         Date dueDate = new Date(date);
-        return Task.create(id, name, dueDate);
+        int priorityValue = cursor.getInt(
+                cursor.getColumnIndexOrThrow(TaskContract.TaskEntry.COLUMN_NAME_PRIORITY));
+        int priority = Task.getPriority(priorityValue);
+        return Task.create(id, name, dueDate, priority);
     }
 
     private Cursor getCursorForTasksQuery(SQLiteDatabase database) {
@@ -103,6 +107,7 @@ public class TaskRepository {
                 TaskContract.TaskEntry._ID,
                 TaskContract.TaskEntry.COLUMN_NAME_NAME,
                 TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE,
+                TaskContract.TaskEntry.COLUMN_NAME_PRIORITY,
         };
         return database.query(
                 TaskContract.TaskEntry.TABLE_NAME,
@@ -155,6 +160,7 @@ public class TaskRepository {
         }
         values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.name());
         values.put(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE, task.dueDate().getTime());
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_PRIORITY, task.priority());
         return values;
     }
 
