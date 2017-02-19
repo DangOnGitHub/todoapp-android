@@ -2,17 +2,18 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:gravity="center_horizontal"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin">
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/text_input_layout_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -24,32 +25,25 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <RelativeLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="@string/due_date"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:text="@string/due_date"/>
-
-            <DatePicker
-                android:id="@+id/dueDatePicker"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:calendarViewShown="false" />
-
-        </RelativeLayout>
+        <DatePicker
+            android:id="@+id/dueDatePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:calendarViewShown="false" />
 
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/prioritySpinner"
-            style="@style/Widget.AppCompat.Spinner.Underlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" />
+            style="@style/Widget.AppCompat.Spinner.Underlined" />
+
     </LinearLayout>
+
 </ScrollView>

@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.dangdoan.todoapp.DateTimeUtils;
 import com.dangdoan.todoapp.R;
 import com.dangdoan.todoapp.Task;
 import com.dangdoan.todoapp.TintUtils;
@@ -65,7 +66,7 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
         setTitle();
     }
 
-    public void setTitle() {
+    private void setTitle() {
         String title;
         if (isEdit()) {
             title = getString(R.string.edit_task);
@@ -111,12 +112,12 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
         configureMenu(menu);
     }
 
-    public void configureMenu(Menu menu) {
+    private void configureMenu(Menu menu) {
         removeUnneededMenuItem(menu);
         tintAllMenuItemsWhite(menu);
     }
 
-    public void removeUnneededMenuItem(Menu menu) {
+    private void removeUnneededMenuItem(Menu menu) {
         if (isEdit()) {
             menu.removeItem(R.id.menu_save);
         } else {
@@ -124,10 +125,10 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
         }
     }
 
-    public void tintAllMenuItemsWhite(Menu menu) {
+    private void tintAllMenuItemsWhite(Menu menu) {
         for (int i = 0; i < menu.size(); i++) {
             MenuItem menuItem = menu.getItem(i);
-            TintUtils.tintMenuItem(getActivity(), menuItem, android.R.color.white);
+            TintUtils.tintMenuItemWhite(getActivity(), menuItem);
         }
     }
 
@@ -159,12 +160,7 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
 
     private Task taskFromUiInputs(String id) {
         String name = nameEditText.getText().toString();
-        Calendar calendar = Calendar.getInstance();
-        int year = dueDatePicker.getYear();
-        int month = dueDatePicker.getMonth();
-        int day = dueDatePicker.getDayOfMonth();
-        calendar.set(year, month, day);
-        Date dueDate = calendar.getTime();
+        Date dueDate = DateTimeUtils.getDate(dueDatePicker);
         int priority = Task.getPriority(prioritySpinner.getSelectedItemPosition());
         return Task.create(id, name, dueDate, priority);
     }

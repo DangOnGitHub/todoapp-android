@@ -27,7 +27,6 @@ import java.util.List;
 public class TasksFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Task>> {
     private static final int TASKS_LOADER_ID = 0;
     private RecyclerView tasksRecyclerView;
-    private FloatingActionButton addButton;
     private TasksAdapter tasksAdapter;
     private TasksLoader tasksLoader;
 
@@ -53,7 +52,7 @@ public class TasksFragment extends Fragment implements LoaderManager.LoaderCallb
     private void configureUi(View rootView) {
         tasksRecyclerView = (RecyclerView) rootView.findViewById(R.id.tasksRecyclerView);
         configureTasksRecyclerView();
-        addButton = (FloatingActionButton) rootView.findViewById(R.id.addButton);
+        FloatingActionButton addButton = (FloatingActionButton) rootView.findViewById(R.id.addButton);
         addButton.setOnClickListener(v -> showAddTaskUi());
     }
 

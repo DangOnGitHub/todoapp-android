@@ -36,14 +36,14 @@ public class TaskRepository {
     public Task getTask(String taskId) {
         SQLiteDatabase database = taskDbHelper.getReadableDatabase();
         Cursor cursor = getCursorForTaskQuery(taskId, database);
-        Task task = readTaskWithCursor(cursor);
+        Task task = getTaskFromReadingCursor(cursor);
         cursor.close();
         database.close();
         return task;
     }
 
     @NonNull
-    private Task readTaskWithCursor(Cursor cursor) {
+    private Task getTaskFromReadingCursor(Cursor cursor) {
         cursor.moveToFirst();
         return getTaskAtCurrentCursorPosition(cursor);
     }
@@ -71,14 +71,14 @@ public class TaskRepository {
     public List<Task> getTasks() {
         SQLiteDatabase database = taskDbHelper.getReadableDatabase();
         Cursor cursor = getCursorForTasksQuery(database);
-        List<Task> tasks = readTasksWithCursor(cursor);
+        List<Task> tasks = getTasksFromReadingCursor(cursor);
         cursor.close();
         database.close();
         return tasks;
     }
 
     @NonNull
-    private List<Task> readTasksWithCursor(Cursor cursor) {
+    private List<Task> getTasksFromReadingCursor(Cursor cursor) {
         List<Task> tasks = new ArrayList<>();
         while (cursor.moveToNext()) {
             Task task = getTaskAtCurrentCursorPosition(cursor);
@@ -121,25 +121,40 @@ public class TaskRepository {
     }
 
     public void insertTask(Task task) {
-        saveTask(task, true);
+        SQLiteDatabase database = taskDbHelper.getWritableDatabase();
+        ContentValues values = createContentValuesForNewTask(task);
+        database.insert(TaskContract.TaskEntry.TABLE_NAME, null, values);
+        database.close();
+        notifyObserver();
+    }
+
+    @NonNull
+    private ContentValues createContentValuesForNewTask(Task task) {
+        ContentValues values = new ContentValues();
+        values.put(TaskContract.TaskEntry._ID, task.id());
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.name());
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE, task.dueDate().getTime());
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_PRIORITY, task.priority());
+        return values;
     }
 
     public void updateTask(Task task) {
-        saveTask(task, false);
-    }
-
-    public void saveTask(Task task, boolean isNewTask) {
         SQLiteDatabase database = taskDbHelper.getWritableDatabase();
-        ContentValues values = createContentValues(task, isNewTask);
-        if (isNewTask) {
-            database.insert(TaskContract.TaskEntry.TABLE_NAME, null, values);
-        } else {
-            String whereClause = TaskContract.TaskEntry._ID + " = ?";
-            String[] whereArgs = {task.id()};
-            database.update(TaskContract.TaskEntry.TABLE_NAME, values, whereClause, whereArgs);
-        }
+        ContentValues values = createContentValuesForExistingTask(task);
+        String whereClause = TaskContract.TaskEntry._ID + " = ?";
+        String[] whereArgs = {task.id()};
+        database.update(TaskContract.TaskEntry.TABLE_NAME, values, whereClause, whereArgs);
         database.close();
         notifyObserver();
+    }
+
+    @NonNull
+    private ContentValues createContentValuesForExistingTask(Task task) {
+        ContentValues values = new ContentValues();
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.name());
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE, task.dueDate().getTime());
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_PRIORITY, task.priority());
+        return values;
     }
 
     private void notifyObserver() {
@@ -150,18 +165,6 @@ public class TaskRepository {
                 observer.onTasksChanged();
             }
         }
-    }
-
-    @NonNull
-    private ContentValues createContentValues(Task task, boolean isNewTask) {
-        ContentValues values = new ContentValues();
-        if (isNewTask) {
-            values.put(TaskContract.TaskEntry._ID, task.id());
-        }
-        values.put(TaskContract.TaskEntry.COLUMN_NAME_NAME, task.name());
-        values.put(TaskContract.TaskEntry.COLUMN_NAME_DUE_DATE, task.dueDate().getTime());
-        values.put(TaskContract.TaskEntry.COLUMN_NAME_PRIORITY, task.priority());
-        return values;
     }
 
     public void addObserver(TaskRepositoryObserver observer) {

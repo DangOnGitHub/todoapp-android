@@ -2,7 +2,6 @@ package com.dangdoan.todoapp;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.MenuItem;
@@ -12,10 +11,10 @@ import android.view.MenuItem;
  */
 
 public class TintUtils {
-    public static void tintMenuItem(Context context, MenuItem item, @ColorRes int resID) {
+    public static void tintMenuItemWhite(Context context, MenuItem item) {
         Drawable icon = item.getIcon();
         icon = DrawableCompat.wrap(icon);
-        DrawableCompat.setTint(icon, ContextCompat.getColor(context, resID));
+        DrawableCompat.setTint(icon, ContextCompat.getColor(context, android.R.color.white));
         item.setIcon(icon);
     }
 }
