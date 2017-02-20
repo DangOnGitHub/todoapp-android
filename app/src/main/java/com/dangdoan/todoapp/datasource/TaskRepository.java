@@ -125,7 +125,7 @@ public class TaskRepository {
         ContentValues values = createContentValuesForNewTask(task);
         database.insert(TaskContract.TaskEntry.TABLE_NAME, null, values);
         database.close();
-        notifyObserver();
+        notifyObservers();
     }
 
     @NonNull
@@ -145,7 +145,7 @@ public class TaskRepository {
         String[] whereArgs = {task.id()};
         database.update(TaskContract.TaskEntry.TABLE_NAME, values, whereClause, whereArgs);
         database.close();
-        notifyObserver();
+        notifyObservers();
     }
 
     @NonNull
@@ -157,7 +157,7 @@ public class TaskRepository {
         return values;
     }
 
-    private void notifyObserver() {
+    private void notifyObservers() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             taskRepositoryObservers.forEach(TaskRepositoryObserver::onTasksChanged);
         } else {
@@ -175,5 +175,14 @@ public class TaskRepository {
 
     public void removeObserver(TaskRepositoryObserver observer) {
         taskRepositoryObservers.remove(observer);
+    }
+
+    public void deleteTask(String taskId) {
+        SQLiteDatabase database = taskDbHelper.getWritableDatabase();
+        String whereClause = TaskContract.TaskEntry._ID + " = ?";
+        String[] whereArgs = {taskId};
+        database.delete(TaskContract.TaskEntry.TABLE_NAME, whereClause, whereArgs);
+        database.close();
+        notifyObservers();
     }
 }

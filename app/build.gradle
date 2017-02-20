@@ -1,3 +1,7 @@
+plugins {
+    id "me.tatarka.retrolambda" version "3.5.0"
+}
+
 apply plugin: 'com.android.application'
 
 android {
@@ -10,9 +14,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        jackOptions {
-            enabled true
-        }
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {

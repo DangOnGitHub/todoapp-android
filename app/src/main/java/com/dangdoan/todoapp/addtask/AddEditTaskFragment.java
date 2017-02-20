@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
@@ -122,6 +123,7 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
             menu.removeItem(R.id.menu_save);
         } else {
             menu.removeItem(R.id.menu_done);
+            menu.removeItem(R.id.menu_delete);
         }
     }
 
@@ -143,8 +145,31 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
                 editTask();
                 getActivity().finish();
                 break;
+            case R.id.menu_delete:
+                showDeleteConfirmation();
+                break;
         }
         return true;
+    }
+
+    private void showDeleteConfirmation() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.delete_task_confirmation_title)
+                .setMessage(R.string.delete_confirmation)
+                .setPositiveButton(R.string.delete, (dialog, which) -> handlePositiveDelete())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                })
+                .create()
+                .show();
+    }
+
+    private void handlePositiveDelete() {
+        deleteTask();
+        getActivity().finish();
+    }
+
+    private void deleteTask() {
+        taskRepository.deleteTask(taskId);
     }
 
     private void createTask() {
