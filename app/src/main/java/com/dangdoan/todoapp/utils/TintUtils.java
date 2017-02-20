@@ -1,4 +1,4 @@
-package com.dangdoan.todoapp;
+package com.dangdoan.todoapp.utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

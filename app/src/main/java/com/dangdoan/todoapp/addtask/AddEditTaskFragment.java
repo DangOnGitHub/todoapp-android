@@ -18,12 +18,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.dangdoan.todoapp.DateTimeUtils;
 import com.dangdoan.todoapp.R;
 import com.dangdoan.todoapp.Task;
-import com.dangdoan.todoapp.TintUtils;
 import com.dangdoan.todoapp.datasource.TaskRepository;
+import com.dangdoan.todoapp.utils.DateTimeUtils;
+import com.dangdoan.todoapp.utils.TintUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -64,7 +65,12 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         taskId = getArguments() != null ? getArguments().getString(ARGUMENT_TASK_ID) : null;
+        configureToolBar();
+    }
+
+    private void configureToolBar() {
         setTitle();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void setTitle() {
@@ -96,6 +102,9 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
     private void configurePrioritySpinner() {
         ArrayAdapter<String> priorityAdapter = setUpPriorityAdapter();
         prioritySpinner.setAdapter(priorityAdapter);
+        if (!isEdit()) {
+            prioritySpinner.setSelection(Task.PRIORITY_NORMAL);
+        }
     }
 
     @NonNull
@@ -138,18 +147,41 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_save:
-                createTask();
-                getActivity().finish();
+                handleSavingTask();
                 break;
             case R.id.menu_done:
-                editTask();
-                getActivity().finish();
+                handleEditingTask();
                 break;
             case R.id.menu_delete:
                 showDeleteConfirmation();
                 break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void handleEditingTask() {
+        boolean hasEnoughInputs = checkInputsEnough();
+        if (!hasEnoughInputs) {
+            showMissingInputsError();
+            return;
+        }
+        editTask();
+        getActivity().finish();
+    }
+
+    public void handleSavingTask() {
+        boolean hasEnoughInputs = checkInputsEnough();
+        if (!hasEnoughInputs) {
+            showMissingInputsError();
+            return;
+        }
+        createTask();
+        getActivity().finish();
+    }
+
+    private boolean checkInputsEnough() {
+        String name = nameEditText.getText().toString();
+        return !name.isEmpty();
     }
 
     private void showDeleteConfirmation() {
@@ -176,6 +208,10 @@ public class AddEditTaskFragment extends Fragment implements LoaderManager.Loade
         String id = UUID.randomUUID().toString();
         Task task = taskFromUiInputs(id);
         taskRepository.insertTask(task);
+    }
+
+    private void showMissingInputsError() {
+        Toast.makeText(getActivity(), R.string.missing_inputs_error, Toast.LENGTH_SHORT).show();
     }
 
     private void editTask() {
